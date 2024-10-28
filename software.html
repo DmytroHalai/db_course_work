@@ -733,6 +733,256 @@ DELETE FROM user WHERE id=5;
 DELETE FROM surveycategory WHERE id=9;
 </code></pre>
 <h3 id="restfull-сервіс-для-управління-даними"><a class="header" href="#restfull-сервіс-для-управління-даними">RESTfull сервіс для управління даними</a></h3>
+<h3 id="pomxml-file-із-залежностями"><a class="header" href="#pomxml-file-із-залежностями">pom.xml file із залежностями</a></h3>
+<pre><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+    &lt;parent&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+        &lt;version&gt;3.3.4&lt;/version&gt;
+        &lt;relativePath/&gt; &lt;!-- lookup parent from repository --&gt;
+    &lt;/parent&gt;
+    &lt;groupId&gt;com.example&lt;/groupId&gt;
+    &lt;artifactId&gt;db&lt;/artifactId&gt;
+    &lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;
+    &lt;name&gt;db&lt;/name&gt;
+    &lt;description&gt;db&lt;/description&gt;
+    &lt;url/&gt;
+    &lt;licenses&gt;
+        &lt;license/&gt;
+    &lt;/licenses&gt;
+    &lt;developers&gt;
+        &lt;developer/&gt;
+    &lt;/developers&gt;
+    &lt;scm&gt;
+        &lt;connection/&gt;
+        &lt;developerConnection/&gt;
+        &lt;tag/&gt;
+        &lt;url/&gt;
+    &lt;/scm&gt;
+    &lt;properties&gt;
+        &lt;java.version&gt;17&lt;/java.version&gt;
+    &lt;/properties&gt;
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+            &lt;scope&gt;test&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+            &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+            &lt;scope&gt;provided&lt;/scope&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.mysql&lt;/groupId&gt;
+            &lt;artifactId&gt;mysql-connector-j&lt;/artifactId&gt;
+            &lt;scope&gt;runtime&lt;/scope&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+
+&lt;/project&gt;
+</code></pre>
+<h4 id="Підключення-до-бази-даних"><a class="header" href="#Підключення-до-бази-даних">Підключення до бази даних</a></h4>
+<pre><code>spring.application.name=db
+spring.datasource.url=jdbc:mysql://localhost:3306/db_labs
+spring.datasource.username=USERNAME
+spring.datasource.password=PASSWORD
+spring.jpa.hibernate.ddl-auto=update
+</code></pre>
+<h4 id="dao-обєкт-що-репрезентує-сутність-в-базі-даних"><a class="header" href="#dao-обєкт-що-репрезентує-сутність-в-базі-даних">DAO-об'єкт, що репрезентує сутність в базі даних</a></h4>
+<pre><code class="language-java">package com.example.db.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "user")
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+
+    @Column(name = "first_name", nullable = false)
+    private String first_name;
+
+    @Column(name = "last_name", nullable = false)
+    private String last_name;
+
+    @Column(name = "email", nullable = false)
+    private String email;
+
+    @Column(name = "phone_number", nullable = false)
+    private String phone_number;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "age")
+    private Integer age;
+
+    @Column(name = "gender")
+    private String gender;
+
+    @Column(name = "company")
+    private String company;
+
+    @Column(name = "is_admin", nullable = false)
+    private Boolean is_admin;
+
+    @Column(name = "password", nullable = false)
+    private String password;
+
+}
+</code></pre>
+<h4 id="Сервіс-для-взаємодії-з-репозиторієм-користувача"><a class="header" href="#Сервіс-для-взаємодії-з-репозиторієм-користувача">Сервіс для взаємодії з репозиторієм користувача</a></h4>
+<pre><code class="language-java">package com.example.db.service;
+
+import com.example.db.model.User;
+import com.example.db.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class UserService {
+
+    private final UserRepository userRepository;
+
+    @Autowired
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public String create(User user) {
+        userRepository.save(user);
+        return "User has been successfully created!";
+    }
+
+    public List&lt;User&gt; getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public Optional&lt;User&gt; getUserById(Long id) throws Exception {
+        if (userRepository.existsById(id)) {
+            return userRepository.findById(id);
+        } else {
+            throw new Exception("User with such an ID doesn't exists.");
+        }
+    }
+
+    public String update(User user, Long id) throws Exception {
+        if (userRepository.existsById(id)) {
+            userRepository.save(user);
+        } else {
+            throw new Exception("User with such ID doesn't exists.");
+        }
+        return "User has been successfully updated!";
+    }
+
+    public String delete(Long id) throws Exception {
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
+        } else {
+            throw new Exception("User with such an ID doesn't exists.");
+        }
+        return "User has been successfully deleted!";
+    }
+}
+</code></pre>
+<h4 id="Контроллер-для-взаємодії-з-сервісом-користувача"><a class="header" href="#Контроллер-для-взаємодії-з-сервісом-користувача">Контроллер для взаємодії з сервісом користувача</a></h4>
+<pre><code class="language-java">package com.example.db.controller;
+
+import com.example.db.model.User;
+import com.example.db.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @PostMapping
+    public String create(@RequestBody User user) {
+        return userService.create(user);
+    }
+
+    @GetMapping
+    public List&lt;User&gt; getAllUsers() {
+        return userService.getAllUsers();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity&lt;User&gt; read(@PathVariable Long id) throws Exception {
+        Optional&lt;User&gt; user = userService.getUserById(id);
+        return user.map(ResponseEntity::ok).orElseGet(() -&gt; ResponseEntity.notFound().build());
+    }
+
+    @PutMapping(value = "/{id}")
+    public String update(@PathVariable Long id, @RequestBody User user) throws Exception {
+        return userService.update(user, id);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity&lt;String&gt; delete(@PathVariable Long id) throws Exception {
+        return ResponseEntity.ok(userService.delete(id));
+    }
+}
+</code></pre>
+<h4 id="dbapplicationjava---вхідна-точка-в-програму"><a class="header" href="#dbapplicationjava---вхідна-точка-в-програму">DbApplication.java - вхідна точка в програму</a></h4>
+<pre><code class="language-java">package com.example.db;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class DbApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(DbApplication.class, args);
+    }
+
+}
+</code></pre>
 
                     </main>
 
