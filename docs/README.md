@@ -1,6 +1,6 @@
 # Виконали
 
-*студент 2-го курсу, групи ІМ-31* **Галай Дмитро** Telegram: [@dimahalai](https://t.me/dimahalai)\
+*студент 2-го курсу, групи ІМ-31* **Галай Дмитро** Telegram: [@dimahalai](https://t.me/dimahalai)
 
 # Керівник
 
